@@ -1,194 +1,132 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-# memory.sh - Bash port of memory.py
-# Controls: a (left), z (right), e (flip), r (restart), q (quit)
+RESET="\033[0m"
+CYAN="\033[36m"
+GREEN="\033[32m"
+WHITE="\033[37m"
 
-SCOREFILE="memory_scores.txt"
+COLS=6
+TOTAL=24
 
-# Couleurs ANSI (use $'...' so variables contain real escape bytes)
-GREEN=$'\033[0;32m'
-CYAN=$'\033[0;36m'
-RESET=$'\033[0m'
+symbols=(A A B B C C D D E E F F G G H H I I J J K K L L)
+shuf -e "${symbols[@]}" -o symbols
 
+revealed=()
+found=()
+for i in $(seq 0 $((TOTAL-1))); do
+    revealed[$i]=0
+    found[$i]=0
+done
 
-clear_screen() {
-    # Use printf with format string to interpret \033 escapes
-    printf "\033[2J\033[H"
-}
+cursor=0
+first=-1
+found_count=0
 
-make_deck() {
-    local pairs=${1:-8}
-    if (( pairs > 26 )); then
-        echo "pairs must be <= 26" >&2
-        exit 1
-    fi
-    deck=()
-    for ((i=0;i<pairs;i++)); do
-        ch=$(printf "\x$(printf "%x" $((65 + i)))")
-        deck+=("$ch")
-        deck+=("$ch")
-    done
-    # shuffle
-    for ((i=${#deck[@]}-1;i>0;i--)); do
-        j=$((RANDOM % (i+1)))
-        tmp=${deck[i]}
-        deck[i]=${deck[j]}
-        deck[j]=$tmp
-    done
-}
+move_cursor() {
+    local dir=$1
+    local next=$cursor
 
-draw_board() {
-    local cols=${1:-8}
-    local status=${2:-}
-    clear_screen
-    local n=${#deck[@]}
-    local rows=$(((n + cols - 1) / cols))
-    for ((r=0;r<rows;r++)); do
-        line=""
-        for ((c=0;c<cols;c++)); do
-            idx=$((r*cols+c))
-            if (( idx >= n )); then
-                break
-            fi
-            if [[ ${matched[idx]:-0} -eq 1 || ${revealed[idx]:-0} -eq 1 ]]; then
-                face=${deck[idx]}
-            else
-                face='?'
-            fi
-            # Use fixed-width tokens [A] or [?]
-            token_body="[${face}]"
-            if (( idx == cursor )); then
-                token="${CYAN}${token_body}${RESET}"  # curseur en cyan
-            elif [[ ${matched[idx]:-0} -eq 1 ]]; then
-                token="${GREEN}${token_body}${RESET}" # cartes déjà trouvées en vert
-            else
-                token="$token_body"                    # cartes fermées normales
-            fi
-
-            line+="$token"
-        done
-        # Use %b so any escape sequences are interpreted
-        printf "%b\n" "$line"
-    done
-    printf "\nUse a (left), z (right), e (flip), r (restart), q (quit)\n"
-    printf "Matched: %d/%d\n" ${#matched[@]} ${#deck[@]}
-    if [[ -n "$status" ]]; then
-        printf "%s\n" "$status"
-    fi
-}
-
-save_score() {
-    local name="$1"
-    local seconds="$2"
-    name=${name^^}
-    name=${name:0:5}
-    printf "%s %.2f\n" "$name" "$seconds" >> "$SCOREFILE"
-}
-
-top_scores() {
-    if [[ ! -f "$SCOREFILE" ]]; then
-        return
-    fi
-    sort -n -k2 "$SCOREFILE" | head -n 3
-}
-
-play() {
-    local pairs=${1:-8}
-    local cols=${2:-8}
-    make_deck "$pairs"
-    revealed=()
-    matched=()
-    cursor=0
-    first=-1
-    start_time=0
-    status=""
     while true; do
-        draw_board "$cols" "$status"
-        # check matched count
-        local matched_count=0
-        for idx in "${!matched[@]}"; do
-            ((matched_count++))
-        done
-        if (( matched_count == ${#deck[@]} )); then
-            now=$(date +%s.%N)
-            elapsed=$(awk "BEGIN{print $now - $start_time}")
-            draw_board "$cols" "All matched! Time: $(printf "%.2f" "$elapsed")s"
-            printf "Enter name (max 5 chars): "
-            read -r name
-            save_score "$name" "$elapsed"
-            echo
-            echo "Top 3 fastest times:"
-            top_scores
-            echo
-            break
-        fi
-        # read one key
-        read -r -n1 ch
-        ch=${ch,,}
-        if [[ -z "$ch" ]]; then
-            continue
-        fi
-        if [[ $ch == 'q' ]]; then
-            return 1
-        fi
-        if [[ $ch == 'r' ]]; then
-            return 0
-        fi
-        if [[ $ch == 'a' ]]; then
-            cursor=$(( (cursor - 1 + ${#deck[@]}) % ${#deck[@]} ))
-            continue
-        fi
-        if [[ $ch == 'z' ]]; then
-            cursor=$(( (cursor + 1) % ${#deck[@]} ))
-            continue
-        fi
-        if [[ $ch == 'e' ]]; then
-            if [[ ${matched[cursor]:-0} -eq 1 || ${revealed[cursor]:-0} -eq 1 ]]; then
-                continue
-            fi
-            revealed[cursor]=1
-            if [[ $first -lt 0 ]]; then
-                first=$cursor
-                if (( start_time == 0 )); then
-                    start_time=$(date +%s.%N)
-                fi
-                status=""
-                continue
-            else
-                second=$cursor
-                if [[ ${deck[first]} == ${deck[second]} ]]; then
-                    matched[$first]=1
-                    matched[$second]=1
-                    status="Match!"
-                    draw_board "$cols" "$status"
-                    sleep 0.5
-                else
-                    status="No match"
-                    draw_board "$cols" "$status"
-                    sleep 0.8
-                    unset revealed[$first]
-                    unset revealed[$second]
-                fi
-                first=-1
-                continue
-            fi
-        fi
-    done
-}
-
-main() {
-    local pairs=8
-    local cols=8
-    while true; do
-        if play "$pairs" "$cols"; then
-            continue
+        if [[ $dir == "left" ]]; then
+            ((next--))
+            ((next<0)) && next=$((TOTAL-1))
         else
-            break
+            ((next++))
+            ((next>=TOTAL)) && next=0
         fi
+
+        [[ ${found[$next]} -eq 0 ]] && break
+    done
+
+    cursor=$next
+}
+
+draw() {
+    clear
+    echo "Memory | a/z = déplacer | e = retourner | q = quitter"
+    echo
+
+    for i in $(seq 0 $((TOTAL-1))); do
+        if [[ ${found[$i]} -eq 1 ]]; then
+            printf "${GREEN}[ %s ]${RESET} " "${symbols[$i]}"
+        elif [[ $i -eq $cursor ]]; then
+            if [[ ${revealed[$i]} -eq 1 ]]; then
+                printf "${CYAN}[ %s ]${RESET} " "${symbols[$i]}"
+            else
+                printf "${CYAN}[ ? ]${RESET} "
+            fi
+        else
+            if [[ ${revealed[$i]} -eq 1 ]]; then
+                printf "${WHITE}[ %s ]${RESET} " "${symbols[$i]}"
+            else
+                printf "[ ? ] "
+            fi
+        fi
+
+        (( (i+1) % COLS == 0 )) && echo
     done
 }
 
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main
-fi
+# placer le curseur sur une carte non trouvée au départ
+for i in $(seq 0 $((TOTAL-1))); do
+    if [[ ${found[$i]} -eq 0 ]]; then
+        cursor=$i
+        break
+    fi
+done
+
+while true; do
+    draw
+    IFS= read -rsn1 key
+
+    [[ $key == "q" ]] && clear && exit 0
+
+    if [[ $key == "a" ]]; then
+        move_cursor "left"
+
+    elif [[ $key == "z" ]]; then
+        move_cursor "right"
+
+    elif [[ $key == "e" ]]; then
+        [[ ${found[$cursor]} -eq 1 || ${revealed[$cursor]} -eq 1 ]] && continue
+
+        revealed[$cursor]=1
+
+        if [[ $first -eq -1 ]]; then
+            first=$cursor
+        else
+            draw
+            sleep 1
+
+            if [[ ${symbols[$first]} == "${symbols[$cursor]}" ]]; then
+                found[$first]=1
+                found[$cursor]=1
+                ((found_count+=2))
+            else
+                revealed[$first]=0
+                revealed[$cursor]=0
+            fi
+
+            first=-1
+
+            # auto-skip vers la prochaine carte valide
+            if [[ $found_count -lt $TOTAL ]]; then
+                for i in $(seq 0 $((TOTAL-1))); do
+                    if [[ ${found[$i]} -eq 0 ]]; then
+                        cursor=$i
+                        break
+                    fi
+                done
+            fi
+        fi
+    fi
+
+    # Fin automatique du jeu
+    if [[ $found_count -eq $TOTAL ]]; then
+        clear
+        echo "Toutes les paires ont été trouvées 🎉"
+        sleep 1
+        clear
+        exit 0
+    fi
+done
