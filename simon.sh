@@ -47,7 +47,7 @@ clear_screen() { clear; }
 
 print_intro() {
   printf "\e[1;36m"
-  cat <<'EOF'
+  cat <<EOF
  #####  ### #     # ####### #     # 
 #     #  #  ##   ## #     # ##    # 
 #        #  # # # # #     # # #   # 
@@ -55,7 +55,7 @@ print_intro() {
       #  #  #     # #     # #   # # 
 #     #  #  #     # #     # #    ## 
  #####  ### #     # ####### #     #                                                                           
-EOF  
+EOF
   printf "\e[0m\n"
 
 

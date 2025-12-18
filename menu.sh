@@ -26,7 +26,7 @@ draw_header() {
 
   # ASCII art title (simple)
   printf "\e[1;36m"
-  cat <<'EOF'
+  cat <<EOF
    #    ######  #    #    #    ######      #####     #    #     # #######  #####  
   # #   #     # #   #    # #   #     #    #     #   # #   ##   ## #       #     # 
  #   #  #     # #  #    #   #  #     #    #        #   #  # # # # #       #       

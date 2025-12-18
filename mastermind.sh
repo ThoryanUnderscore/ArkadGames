@@ -128,7 +128,7 @@ reveal_secret() {
 # start game
 
 printf "\e[1;36m"
-cat <<'EOF'
+cat <<EOF
 #     #    #     #####  ####### ####### ######  #     # ### #     # ######  
 ##   ##   # #   #     #    #    #       #     # ##   ##  #  ##    # #     # 
 # # # #  #   #  #          #    #       #     # # # # #  #  # #   # #     # 
@@ -136,7 +136,7 @@ cat <<'EOF'
 #     # #######       #    #    #       #   #   #     #  #  #   # # #     # 
 #     # #     # #     #    #    #       #    #  #     #  #  #    ## #     # 
 #     # #     #  #####     #    ####### #     # #     # ### #     # ######                                                                      
-EOF  
+EOF
   printf "\e[0m\n"
 echo "Mastermind - Devinez la combinaison de 4 couleurs (doublons autorisés)."
 echo "Initiales disponibles:"
