@@ -9,7 +9,8 @@ COLS=6
 TOTAL=24
 
 symbols=(A A B B C C D D E E F F G G H H I I J J K K L L)
-shuf -e "${symbols[@]}" -o symbols
+symbols=($(shuf -e "${symbols[@]}"))
+
 
 revealed=()
 found=()
@@ -44,7 +45,7 @@ move_cursor() {
 draw() {
     clear
     printf "\e[1;36m"
-  cat <<'EOF'
+    cat <<'EOF'
 #     # ####### #     # ####### ######  #     #     #####     #    #     # ####### 
 ##   ## #       ##   ## #     # #     #  #   #     #     #   # #   ##   ## #       
 # # # # #       # # # # #     # #     #   # #      #        #   #  # # # # #       
@@ -52,7 +53,7 @@ draw() {
 #     # #       #     # #     # #   #      #       #     # ####### #     # #       
 #     # #       #     # #     # #    #     #       #     # #     # #     # #       
 #     # ####### #     # ####### #     #    #        #####  #     # #     # #######                                                                         
-EOF  
+EOF
   printf "\e[0m\n"
     echo "Memory | a/z = déplacer | e = retourner | q = quitter"
     echo
