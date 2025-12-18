@@ -126,6 +126,18 @@ reveal_secret() {
 }
 
 # start game
+
+printf "\e[1;36m"
+cat <<'EOF'
+#     #    #     #####  ####### ####### ######  #     # ### #     # ######  
+##   ##   # #   #     #    #    #       #     # ##   ##  #  ##    # #     # 
+# # # #  #   #  #          #    #       #     # # # # #  #  # #   # #     # 
+#  #  # #     #  #####     #    #####   ######  #  #  #  #  #  #  # #     # 
+#     # #######       #    #    #       #   #   #     #  #  #   # # #     # 
+#     # #     # #     #    #    #       #    #  #     #  #  #    ## #     # 
+#     # #     #  #####     #    ####### #     # #     # ### #     # ######                                                                      
+EOF  
+  printf "\e[0m\n"
 echo "Mastermind - Devinez la combinaison de 4 couleurs (doublons autorisés)."
 echo "Initiales disponibles:"
 for ch in "${COLORS_INITS[@]}"; do

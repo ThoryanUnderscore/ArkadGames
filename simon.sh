@@ -46,6 +46,19 @@ done
 clear_screen() { clear; }
 
 print_intro() {
+  printf "\e[1;36m"
+  cat <<'EOF'
+ #####  ### #     # ####### #     # 
+#     #  #  ##   ## #     # ##    # 
+#        #  # # # # #     # # #   # 
+ #####   #  #  #  # #     # #  #  # 
+      #  #  #     # #     # #   # # 
+#     #  #  #     # #     # #    ## 
+ #####  ### #     # ####### #     #                                                                           
+EOF  
+  printf "\e[0m\n"
+
+
   echo "Simon - Memory Game (Bash)"
   echo "Digits: 1..9 (colors). Type 'q' to quit at any prompt."
   echo "Delay between flashes: $DELAY seconds."
