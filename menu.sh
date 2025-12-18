@@ -7,10 +7,8 @@ games=(
   "1|Mastermind|mastermind.sh"
   "2|Le Pendu|pendu.sh"
   "3|Le Puissance 4|puissance4.sh"
-  "4|Snake|snake.sh"
-  "5|Labyrinth|labyrinthe.sh"
-  "6|Simon|simon.sh"
-  "7|Memory|memory.sh"
+  "4|Simon|simon.sh"
+  "5|Memory|memory.sh"
 )
 
 cleanup() {
@@ -79,7 +77,7 @@ while true; do
 
   case "$choice" in
     q|Q) echo "Au revoir."; exit 0 ;;
-    1|2|3|4|5|6|7)
+    1|2|3|4|5)
       for g in "${games[@]}"; do
         IFS='|' read -r num name file <<< "$g"
         if [[ "$num" == "$choice" ]]; then
