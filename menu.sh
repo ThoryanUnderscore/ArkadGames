@@ -4,11 +4,11 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 games=(
-  "1|Mastermind|mastermind.sh"
-  "2|Le Pendu|pendu.sh"
-  "3|Le Puissance 4|puissance4.sh"
-  "4|Simon|simon.sh"
-  "5|Memory|memory.sh"
+  "1|Mastermind|./Games/mastermind.sh"
+  "2|Le Pendu|./Games/pendu.sh"
+  "3|Le Puissance 4|./Games/puissance4.sh"
+  "4|Simon|./Games/simon.sh"
+  "5|Memory|./Games/memory.sh"
 )
 
 cleanup() {
