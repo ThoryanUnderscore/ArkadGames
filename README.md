@@ -18,18 +18,6 @@ Le catalogue actuel comprend 5 jeux emblématiques (sur un total de 7 prévus) :
   SIMON : Testez votre mémoire visuelle et auditive en reproduisant des suites de couleurs.
   MEMORY : Retrouvez toutes les paires de cartes identiques.
 
-## 🛠️ Structure du Projet
-
-.
-├── menu.sh              # Script principal (lanceur)
-├── Games/               # Répertoire contenant les jeux
-│   ├── mastermind.sh
-│   ├── pendu.sh
-│   ├── puissance4.sh
-│   ├── simon.sh
-│   └── memory.sh
-└── README.md            # Documentation
-
 ## 🚀 Installation et Utilisation
 Prérequis :
   Un environnement Linux (ou compatible Bash comme WSL sur Windows).
