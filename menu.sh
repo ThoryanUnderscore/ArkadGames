@@ -35,9 +35,9 @@ draw_header() {
                                                                                   
 EOF
   printf "\e[0m"
-  echo "==============================================="
-  printf "   \e[1;33mMenu jeux d'arcade\e[0m   -   Dossier: %s\n" "$script_dir"
-  echo "==============================================="
+  echo "================================================================================="
+  printf "             -    \e[1;33mMenu jeux d'arcade\e[0m    -
+  echo "================================================================================="
 }
 
 run_game() {
@@ -46,7 +46,6 @@ run_game() {
   if [[ -f "$path" ]]; then
     # clear screen before launching the game (requirement)
     clear
-    echo "Lancement de $(basename "$file")..."
     if [[ -x "$path" ]]; then
       "$path"
     else
