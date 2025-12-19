@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 # ====== Chargement du fichier de mots ======
-WORDS_FILE="words.txt"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORDS_FILE="$script_dir/words.txt"
 if [[ ! -f "$WORDS_FILE" ]]; then
     echo "Erreur : fichier '$WORDS_FILE' introuvable."
     exit 1
